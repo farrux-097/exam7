@@ -1,13 +1,41 @@
+import { api } from "@/api";
 import Box from "@/components/ui/Box";
 import Title from "@/components/ui/Title";
 import { REGIONS } from "@/static";
+import { useMutation } from "@tanstack/react-query";
 import { memo, useState,  } from "react";
 
 
 
 const CreateStudent = () => {
-    const [first, setFirst] = useState("")
+  const [first, setFirst] = useState("")
   const [last, setLast] = useState("")
+  const [gender, setGender] = useState("");
+  const [region, setRegion] = useState("");
+
+
+    const createStudent = useMutation({
+    mutationFn: (newStudent: {
+      first_name: string;
+      last_name: string;
+      gender: string;
+      region: string;
+    }) =>
+       api
+       .post("exam", newStudent), 
+    
+    onSuccess: () => { setFirst("");setLast("");setGender("");setRegion("");},
+
+  });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createStudent.mutate({
+      first_name: first,
+      last_name: last,
+      gender,
+      region,
+    });
+  };
   return (
     <div>
       <Box>
@@ -16,7 +44,7 @@ const CreateStudent = () => {
       <Box>
         <div className="max-w-[600px] w-full">
           <Title className="mb-3">Create</Title>
-          <form action="">
+          <form onSubmit={handleSubmit} action="">
             <input 
             value={first}
               type="text"
@@ -33,16 +61,20 @@ const CreateStudent = () => {
             />
             <select
               className="w-full border rounded-xl h-10 indent-2 border-slate-200 mb-3"
+               value={gender}
+              onChange={(e) => setGender(e.target.value)}
               name=""
               id=""
             >
-              <option value="" hidden>
+              <option  value="" hidden>
                 Gender
               </option>
-              <option value="">Male</option>
-              <option value="">Female</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
             <select
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
               className="w-full border rounded-xl h-10 indent-2 border-slate-200 mb-3"
               name=""
               id=""
@@ -52,8 +84,8 @@ const CreateStudent = () => {
               </option>
               
               {
-                REGIONS?.map((item:string) => (
-                    <option value="">
+                REGIONS?.map((item:string , index) => (
+                    <option key={index} value={item}>
                       {item}
                     </option>
                     
