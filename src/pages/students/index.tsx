@@ -2,11 +2,20 @@ import { memo } from "react";
 import Box from "@/components/ui/Box";
 import Title from "@/components/ui/Title";
 import StudentView from "@/components/student-view/StudentView";
+import { useMovie } from "@/api/hooks/useStudent";
 
 
 
 
 const Student = () => {
+   const { getMovies } = useMovie();
+  const { data, isLoading } = getMovies();
+    
+  
+  if (isLoading) return <p>Loading...</p>;
+ 
+
+
   
   return (
     <div>
@@ -22,7 +31,7 @@ const Student = () => {
           </div>
         </div>
       </Box>
-      <StudentView  />
+      <StudentView students={data ?? []} />
     </div>
   );
 };
